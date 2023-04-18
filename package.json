@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src --ext .ts --fix",
+    "knex": "node --no-warnings --loader tsx ./node_modules/knex/bin/cli.js",
     "dev": "tsx watch src/server.ts"
   },
   "repository": {
@@ -20,7 +21,9 @@
   },
   "homepage": "https://github.com/RenanFachin/RS_IGNITE_daily-diet-API#readme",
   "dependencies": {
-    "fastify": "^4.15.0"
+    "fastify": "^4.15.0",
+    "knex": "^2.4.2",
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
     "@rocketseat/eslint-config": "^1.2.0",
