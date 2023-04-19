@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { knex } from '../database'
-import crypto from 'node:crypto'
+import crypto, { randomUUID } from 'node:crypto'
 import { z } from 'zod'
 
 // TODO plugin deve ser async
@@ -32,6 +32,19 @@ export async function usersRoutes(app: FastifyInstance) {
       throw new Error('Este email já está vinculado à um usuário')
     }
 
+    // Verificando se já existe uma sessionID
+    let sessionId = request.cookies.sessionId
+
+    // Caso não exista, criar um
+    if (!sessionId) {
+      sessionId = randomUUID()
+
+      response.cookie('sessionId', sessionId, {
+        path: '/meals', // apenas as rotas /meals podem acessar ao cookie
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      })
+    }
+
     await knex('users').insert({
       id: crypto.randomUUID(),
       name,
@@ -39,6 +52,7 @@ export async function usersRoutes(app: FastifyInstance) {
       address,
       weight,
       height,
+      session_id: sessionId,
     })
 
     return response.status(201).send()
