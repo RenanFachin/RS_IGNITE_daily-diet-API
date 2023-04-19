@@ -16,6 +16,7 @@ export async function mealsRoutes(app: FastifyInstance) {
     // console.log(sessionId)
 
     // A partir deste sessionID, buscar os dados na tabela users para adicionar durante a criação de uma nova refeição na tabela meals
+    // Desestruturando o user para depois armazenar apenas o seu ID na variável userID
     const [user] = await knex('users')
       .where('session_id', sessionId)
       .select('id')
@@ -45,9 +46,24 @@ export async function mealsRoutes(app: FastifyInstance) {
     return response.status(201).send()
   })
 
-  // Listando todas refeições
-  app.get('/', async () => {
-    const meals = await knex('meals').select()
+  // Listando todas refeições apenas do usuário
+  app.get('/', async (request, response) => {
+
+    const sessionId = request.cookies.sessionId
+
+    if (!sessionId) {
+      return response.status(401).send({
+        error: 'Unauthorized',
+      })
+    }
+    const [user] = await knex('users')
+      .where('session_id', sessionId)
+      .select('id')
+
+    const userId = user.id
+
+    // .where('user_id', userId) -> Selecionar apenas onde a coluna user_id seja correspondende ao id do usuário que criou o prato
+    const meals = await knex('meals').where('user_id', userId).select()
 
     return {
       meals,
@@ -95,13 +111,13 @@ export async function mealsRoutes(app: FastifyInstance) {
 
       'Total de refeições dentro da dieta': parseInt(
         JSON.parse(JSON.stringify(refDieta))[0][
-          'Total de refeições dentro da dieta'
+        'Total de refeições dentro da dieta'
         ],
       ),
 
       'Total de refeições fora da dieta': parseInt(
         JSON.parse(JSON.stringify(refForaDieta))[0][
-          'Total de refeições fora da dieta'
+        'Total de refeições fora da dieta'
         ],
       ),
     }
