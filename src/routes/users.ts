@@ -22,9 +22,13 @@ export async function usersRoutes(app: FastifyInstance) {
 
     // Conferindo se o email já está cadastrado
     // Selecionando todas as colunas ('*') da tabela de usuários ('from("users")') onde a coluna "email" é igual ao valor da variável "email" ('where({ email })')
-    const checkUserExist = await knex.select('*').from('users').where({ email })
+    const checkUserExist = await knex
+      .select('*')
+      .from('users')
+      .where('email', email)
+      .first()
 
-    if (checkUserExist.length > 0) {
+    if (checkUserExist) {
       throw new Error('Este email já está vinculado à um usuário')
     }
 

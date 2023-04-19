@@ -25,4 +25,31 @@ export async function mealsRoutes(app: FastifyInstance) {
 
     return response.status(201).send()
   })
+
+  // Listando todas refeições
+  app.get('/', async () => {
+    const meals = await knex('meals').select()
+
+    return {
+      meals,
+    }
+  })
+
+  // Listando uma refeição
+  app.get('/:id', async (request) => {
+    // Capturando os parâmetros nomeados (/:id)
+    // Tipando
+    const getMealParamsSchema = z.object({
+      id: z.string().uuid(),
+    })
+
+    const params = getMealParamsSchema.parse(request.params)
+
+    // Buscando a refeição do db
+    // Buscando na tabela meals, na coluna ID, o params.id (que é o que vem da rota)
+    // .first() é para não retornar como array e sim como (existendo ou undefined)
+    const meal = await knex('meals').where('id', params.id).first()
+
+    return { meal }
+  })
 }
