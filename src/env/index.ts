@@ -1,8 +1,13 @@
-import 'dotenv/config'
+import { config } from 'dotenv'
 import { z } from 'zod'
 
-// Schema de validação de dados apenas das variáveis de ambiente
+if (process.env.NODE_ENV === 'test') {
+  config({ path: '.env.test' })
+} else {
+  config()
+}
 
+// Schema de validação de dados apenas das variáveis de ambiente
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
   DATABASE_URL: z.string(),

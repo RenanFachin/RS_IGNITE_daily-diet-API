@@ -229,13 +229,13 @@ export async function mealsRoutes(app: FastifyInstance) {
 
         'Total de refeições dentro da dieta': parseInt(
           JSON.parse(JSON.stringify(refDieta))[0][
-          'Total de refeições dentro da dieta'
+            'Total de refeições dentro da dieta'
           ],
         ),
 
         'Total de refeições fora da dieta': parseInt(
           JSON.parse(JSON.stringify(refForaDieta))[0][
-          'Total de refeições fora da dieta'
+            'Total de refeições fora da dieta'
           ],
         ),
       }
