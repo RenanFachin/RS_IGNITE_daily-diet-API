@@ -29,8 +29,8 @@ Tópicos abordados: `ESModule`, `Typescript`, `ESLint`, `Banco de dados - Knex, 
       - Descrição
       - Data e Hora
       - Está dentro ou não da dieta
-  - [ ] Deve ser possível editar uma refeição, podendo alterar todos os dados acima
-  - [ ] Deve ser possível apagar uma refeição
+  - [x] Deve ser possível editar uma refeição, podendo alterar todos os dados acima
+  - [x] Deve ser possível apagar uma refeição
   - [x] Deve ser possível listar todas as refeições de um usuário
   - [x] Deve ser possível visualizar uma única refeição
   - [x] Deve ser possível recuperar as métricas de um usuário
@@ -81,4 +81,14 @@ GET /meals/:${meal_id}
 - Mostrar um resumo geral das refeições cadastradas pelo usuário (total de refeições, refeições dentro da dieta e refeições fora da dieta)
 ```bash
 GET /meals/summary
+```
+
+- Deletar uma refeição cadastrada
+```bash
+DELETE /meals/:${meal_id}
+```
+
+- Editar uma refeição cadastrada
+```bash
+PUT /meals/:${meal_id}
 ```
