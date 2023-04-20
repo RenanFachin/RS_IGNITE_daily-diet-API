@@ -90,8 +90,8 @@ export async function mealsRoutes(app: FastifyInstance) {
         .first()
 
       if (!meal) {
-        return response.status(401).send({
-          error: 'Unauthorized',
+        return response.status(404).send({
+          error: 'Refeição não encontrada',
         })
       }
 
@@ -99,55 +99,95 @@ export async function mealsRoutes(app: FastifyInstance) {
     },
   )
 
-  // Resumo das refeições
-  app.get('/summary', async (request) => {
-    // .sum('coluna') => Soma a quantidade de valores de uma coluna do db
-
-    // Buscando o usuário
-    const { sessionId } = request.cookies
-
-    const [user] = await knex('users')
-      .where('session_id', sessionId)
-      .select('id')
-
-    const userId = user.id
-
-    const [count] = await knex('meals')
-      .count('id', {
-        as: 'Total de refeições registradas',
+  // Apagando uma refeição cadastrada
+  app.delete(
+    '/:id',
+    { preHandler: [checkSessionIdExists] },
+    async (request, response) => {
+      const getMealParamsSchema = z.object({
+        id: z.string().uuid(),
       })
-      .where('user_id', userId)
 
-    const refDieta = await knex('meals')
-      .count('id', { as: 'Total de refeições dentro da dieta' })
-      .where('isOnTheDiet', true)
-      .andWhere('user_id', userId)
+      const params = getMealParamsSchema.parse(request.params)
 
-    const refForaDieta = await knex('meals')
-      .count('id', { as: 'Total de refeições fora da dieta' })
-      .where('isOnTheDiet', false)
-      .andWhere('user_id', userId)
+      // Buscando o usuário
+      const { sessionId } = request.cookies
 
-    const summary = {
-      'Total de refeições registradas': parseInt(
-        JSON.parse(JSON.stringify(count))['Total de refeições registradas'],
-      ),
+      const [user] = await knex('users')
+        .where('session_id', sessionId)
+        .select('id')
 
-      'Total de refeições dentro da dieta': parseInt(
-        JSON.parse(JSON.stringify(refDieta))[0][
-        'Total de refeições dentro da dieta'
-        ],
-      ),
+      const userId = user.id
 
-      'Total de refeições fora da dieta': parseInt(
-        JSON.parse(JSON.stringify(refForaDieta))[0][
-        'Total de refeições fora da dieta'
-        ],
-      ),
-    }
+      const meal = await knex('meals')
+        .where('id', params.id)
+        .andWhere('user_id', userId)
+        .first()
+        .delete()
 
-    return {
-      summary,
-    }
-  })
+      if (!meal) {
+        return response.status(401).send({
+          error: 'Unauthorized',
+        })
+      }
+
+      return response.status(202).send('Refeição deletada com sucesso')
+    },
+  )
+
+  // Resumo das refeições
+  app.get(
+    '/summary',
+    { preHandler: [checkSessionIdExists] },
+    async (request) => {
+      // .sum('coluna') => Soma a quantidade de valores de uma coluna do db
+
+      // Buscando o usuário
+      const { sessionId } = request.cookies
+
+      const [user] = await knex('users')
+        .where('session_id', sessionId)
+        .select('id')
+
+      const userId = user.id
+
+      const [count] = await knex('meals')
+        .count('id', {
+          as: 'Total de refeições registradas',
+        })
+        .where('user_id', userId)
+
+      const refDieta = await knex('meals')
+        .count('id', { as: 'Total de refeições dentro da dieta' })
+        .where('isOnTheDiet', true)
+        .andWhere('user_id', userId)
+
+      const refForaDieta = await knex('meals')
+        .count('id', { as: 'Total de refeições fora da dieta' })
+        .where('isOnTheDiet', false)
+        .andWhere('user_id', userId)
+
+      const summary = {
+        'Total de refeições registradas': parseInt(
+          JSON.parse(JSON.stringify(count))['Total de refeições registradas'],
+        ),
+
+        'Total de refeições dentro da dieta': parseInt(
+          JSON.parse(JSON.stringify(refDieta))[0][
+          'Total de refeições dentro da dieta'
+          ],
+        ),
+
+        'Total de refeições fora da dieta': parseInt(
+          JSON.parse(JSON.stringify(refForaDieta))[0][
+          'Total de refeições fora da dieta'
+          ],
+        ),
+      }
+
+      return {
+        summary,
+      }
+    },
+  )
 }
