@@ -56,7 +56,6 @@ Tópicos abordados: `ESModule`, `Typescript`, `ESLint`, `Banco de dados - Knex, 
 # Rodar as migrations do projeto para criar o banco de dados
   npm run knex -- migrate:latest
 ```
-
 ## Insomnia do projeto
 [![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=Daily-diet-API&uri=https%3A%2F%2Fraw.githubusercontent.com%2FRenanFachin%2FRS_IGNITE_daily-diet-API%2Fmain%2Fexport.json)
 
@@ -94,4 +93,19 @@ DELETE /meals/:${meal_id}
 - Editar uma refeição cadastrada
 ```bash
 PUT /meals/:${meal_id}
+```
+
+## Testes automatizados e2e
+  - [x] Should be able to create a new account
+  - [x] Should be able to create a new meal
+  - [x] Should be able to list all meals
+  - [x] Should be able to get a specific meals
+  - [x] Should be able to get the summary meals
+  - [x] Should be able to delete a specific meal
+  - [ ] Should be able to edit a meal
+
+
+```bash
+# Após a instalação do projeto e suas depêndencias:
+  npm run test
 ```
