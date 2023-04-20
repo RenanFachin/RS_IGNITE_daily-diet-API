@@ -135,6 +135,61 @@ export async function mealsRoutes(app: FastifyInstance) {
     },
   )
 
+  // Editando uma refeição cadastrada
+  app.put(
+    '/:id',
+    { preHandler: [checkSessionIdExists] },
+    async (request, response) => {
+      // Capturando o parâmetro id pelos params e tipando
+      const getMealParamsSchema = z.object({
+        id: z.string().uuid(),
+      })
+
+      const params = getMealParamsSchema.parse(request.params)
+
+      // Buscando o usuário partir dos cookies
+      const { sessionId } = request.cookies
+
+      // Buscando o id do usuário com base no session_id
+      const [user] = await knex('users')
+        .where('session_id', sessionId)
+        .select('id')
+
+      const userId = user.id
+
+      // Validando e capturando o que o usuário está mandando pelo body
+      const editMealBodySchema = z.object({
+        name: z.string(),
+        description: z.string(),
+        isOnTheDiet: z.boolean(),
+      })
+
+      const { name, description, isOnTheDiet } = editMealBodySchema.parse(
+        request.body,
+      )
+
+      // Buscando a refeição existente, passando o id que veio por params e o id do usuário capturado pelo session_id
+      const meal = await knex('meals')
+        .where('id', params.id)
+        .andWhere('user_id', userId)
+        .first()
+        .update({
+          name,
+          description,
+          isOnTheDiet,
+        })
+
+      // Caso não seja encontrada no db
+      if (!meal) {
+        return response.status(401).send({
+          error: 'Refeição não encontrada',
+        })
+      }
+
+      return response.status(202).send()
+    },
+  )
+
   // Resumo das refeições
   app.get(
     '/summary',
