@@ -19,30 +19,30 @@ describe('Users/meals routes', () => {
     execSync('npm run knex migrate:latest')
   })
 
-  it('should be able to create a new account', async () => {
-    // .server => é o método de criar um servidor node puro no app
-    // o "request" é do supertest e precisa sempre receber o servidor do node como parâmetro
-    await supertestRequest(app.server)
-      .post('/users')
-      .send({
-        name: 'Usuário_teste',
-        email: 'email@email.com',
-        address: 'Rua de teste',
-        weight: 80.5,
-        height: 174,
-      })
-      .expect(201)
-
-    // Conferindo se ele criou o cookie da session_id
-    // console.log(response.get('Set-Cookie'))
-  })
-
   // Dados do novo usuário
   const email = 'teste@email.com'
   const name = 'teste'
   const address = 'Rua de teste'
   const weight = 80.5
   const height = 174
+
+  it('should be able to create a new account', async () => {
+    // .server => é o método de criar um servidor node puro no app
+    // o "request" é do supertest e precisa sempre receber o servidor do node como parâmetro
+    await supertestRequest(app.server)
+      .post('/users')
+      .send({
+        name,
+        email,
+        address,
+        weight,
+        height,
+      })
+      .expect(201)
+
+    // Conferindo se ele criou o cookie da session_id
+    // console.log(response.get('Set-Cookie'))
+  })
 
   it('should be able to create a new meal', async () => {
     // Passo 1: Precisa ter um usuário válido para que seja possível criar um novo registro de refeição
@@ -123,5 +123,51 @@ describe('Users/meals routes', () => {
         description: 'Teste',
       }),
     ])
+  })
+
+  it('should be able to get a specific meals', async () => {
+    const createUserResponse = await supertestRequest(app.server)
+      .post('/users')
+      .send({
+        name,
+        email,
+        address,
+        weight,
+        height,
+      })
+
+    const cookies = createUserResponse.get('Set-Cookie')
+
+    const userId = await knex('users').select('id').where({ email })
+
+    await supertestRequest(app.server)
+      .post('/meals')
+      .send({
+        user_id: userId,
+        name: 'Refeição de Teste',
+        description: 'Teste',
+        isOnTheDiet: false,
+      })
+      .set('Cookie', cookies) // enviando os cookies no cabeçalho da requisição
+
+    const listMealsResponse = await supertestRequest(app.server)
+      .get('/meals')
+      .set('Cookie', cookies) // enviando os cookies no cabeçalho da requisição
+      .expect(200)
+
+    // Recuperando o id da refeição
+    const mealId = listMealsResponse.body.meals[0].id
+
+    const getMealResponse = await supertestRequest(app.server)
+      .get(`/meals/${mealId}`)
+      .set('Cookie', cookies) // enviando os cookies no cabeçalho da requisição
+      .expect(200)
+
+    expect(getMealResponse.body.meal).toEqual(
+      expect.objectContaining({
+        name: 'Refeição de Teste',
+        description: 'Teste',
+      }),
+    )
   })
 })
