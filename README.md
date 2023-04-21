@@ -57,7 +57,7 @@ Tópicos abordados: `ESModule`, `Typescript`, `ESLint`, `Banco de dados - Knex, 
   npm run knex -- migrate:latest
 ```
 ## Insomnia do projeto
-[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=Daily-diet-API&uri=https%3A%2F%2Fraw.githubusercontent.com%2FRenanFachin%2FRS_IGNITE_daily-diet-API%2Fmain%2Fexport.json)
+[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=ignite-daily-diet-api-insomniaConfigs&uri=https%3A%2F%2Fraw.githubusercontent.com%2FRenanFachin%2FRS_IGNITE_daily-diet-API%2Fmain%2Fexport.json)
 
 ## Rotas
 - Criar novo usuário
