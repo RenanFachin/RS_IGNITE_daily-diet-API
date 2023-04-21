@@ -102,7 +102,7 @@ PUT /meals/:${meal_id}
   - [x] Should be able to get a specific meals
   - [x] Should be able to get the summary meals
   - [x] Should be able to delete a specific meal
-  - [ ] Should be able to edit a meal
+  - [x] Should be able to edit a meal
 
 
 ```bash
