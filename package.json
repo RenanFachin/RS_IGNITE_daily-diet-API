@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "API de controle diário de dieta - Daily Diet API",
   "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "lint": "eslint src --ext .ts --fix",
     "knex": "node --no-warnings --loader tsx ./node_modules/knex/bin/cli.js",
@@ -26,7 +29,7 @@
     "dotenv": "^16.0.3",
     "fastify": "^4.15.0",
     "knex": "^2.4.2",
-    "sqlite3": "^5.1.6",
+    "pg": "^8.10.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {
@@ -35,6 +38,7 @@
     "@types/supertest": "^2.0.12",
     "eslint": "^8.38.0",
     "supertest": "^6.3.3",
+    "sqlite3": "^5.1.6",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "typescript": "^5.0.4",
